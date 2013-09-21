@@ -3,34 +3,38 @@ require 'mocha'
 require_relative "../../lib/stager"
 
 describe Stager do
-  subject { Stager.new(commit_hashes) }
-
-  let(:stage_path)   { 
-    File.expand_path("../../stage", __FILE__) 
+  subject { Stager.new(app_path) }
+  let(:app_path)   { 
+    File.expand_path("../../test_web_app", __FILE__) 
   }
-  let(:commit_hashes) { 
-    %w(
-      d91aac29b2b512c065fa96d28df05d960dbd9135
-      1f9983f92e9d0a6cd3c377c9ba45c7e9d0efdea2
-    )
+  let(:commit_hash) { 
+    "d91aac29b2b512c065fa96d28df05d960dbd9135"
   }
 
-  describe "#stage_commits" do
-    subject { Stager.new(commit_hashes) }
+  describe "#stage" do
+    subject { Stager.new(app_path) }
 
     before do
-      subject.stubs(:stage_dir).returns(stage_path)
-      @files = Dir[stage_path+"/**/*"].map do |f| 
-        f.match(/#{commit_hashes[0]}.*/).to_s
-      end
+      @files = Dir[app_path+"/**/*"]
     end
 
-    it "must copy the 2 commits to the stage dir" do
-      subject.stage_commits
-      @files.must_include "d91aac29b2b512c065fa96d28df05d960dbd9135"
-      @files.must_include "d91aac29b2b512c065fa96d28df05d960dbd9135/app.rb"
-      @files.must_include "1f9983f92e9d0a6cd3c377c9ba45c7e9d0efdea2"
-      @files.must_include "1f9983f92e9d0a6cd3c377c9ba45c7e9d0efdea2/app.rb"
+    it "must stage the commit" do
+      subject.stage(commit_hash)
+      assert File.read(@files[0]).scan(/Hello, world!/).any?
+    end
+  end
+
+  describe "#unstage" do
+    subject { Stager.new(app_path) }
+
+    before do
+      subject.stage(commit_hash)
+      @files = Dir[app_path+"/**/*"]
+    end
+
+    it "must unstage the commit" do
+      subject.unstage
+      assert File.read(@files[0]).scan(/Hello, speed stats!/).any?
     end
   end
 end
