@@ -1,5 +1,5 @@
-require 'minitest/autorun'
-require 'mocha'
+require 'minitest_helper'
+
 require_relative "../../lib/stager"
 
 describe Stager do
