@@ -9,6 +9,10 @@ class Crawler
     def initialize(attributes)
       super(attributes, [:errors])
     end
+
+    def self.collect(uri, opts={})
+      
+    end
   end
 end
 

@@ -7,20 +7,25 @@ describe Crawler do
   
   let(:links) {
     [
-      Crawler::Link.new(opts: '', uri: 'http://localhost:3000/')
+      Crawler::Link.new(opts: [], uri: 'http://localhost:3000/')
     ]
   }
 
   describe ".curl_all(links)" do
     it "must return an array of .curl returns" do
       subject.curl_all(links).must_equal(
-        []
+        [
+          Crawler::Result.new( uri: "http://localhost:3000",
+            response_time: 1000.00,
+            errors: []
+          )
+        ]
       )
     end
   end
 
-  describe ".curl(opts, uri)" do
-    it "must return a Struct with results" do
+  describe ".curl(uri, opts)" do
+    it "must return results" do
       subject.curl(links[0]).must_equal(
         Crawler::Result.new( uri: "http://localhost:3000",
           response_time: 1000.00,
